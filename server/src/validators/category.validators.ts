@@ -1,4 +1,4 @@
-import { CategoryPriority } from 'src/types';
+import { CategoryPriority } from '../types';
 import { TypeOf, object, string, z } from 'zod';
 
 export const categoryValidator = object({

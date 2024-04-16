@@ -16,7 +16,7 @@ export const createCategory = async (
         return category;
     } catch (e: any) {
         logger.error(e);
-        throw new Error('Failed to register user, please try again later');
+        throw new Error('Failed to create category, please try again later');
     }
 };
 
@@ -28,7 +28,7 @@ export const getCategories = async (
         return categories;
     } catch (e: any) {
         logger.error(e);
-        throw new Error('Failed to register user, please try again later');
+        throw new Error('Failed to get categories, please try again later');
     }
 };
 
@@ -38,7 +38,7 @@ export const getCategory = async (id: string): Promise<CategoryDocument> => {
         return category;
     } catch (e: any) {
         logger.error(e);
-        throw new Error('Failed to register user, please try again later');
+        throw new Error('Failed to get category, please try again later');
     }
 };
 
@@ -47,7 +47,7 @@ export const deleteCategory = async (id: string) => {
         return await CategoryModel.findByIdAndDelete(id);
     } catch (e: any) {
         logger.error(e);
-        throw new Error('Failed to register user, please try again later');
+        throw new Error('Failed to delete category, please try again later');
     }
 };
 
@@ -60,6 +60,6 @@ export const editCategory = async (
         return category;
     } catch (e: any) {
         logger.error(e);
-        throw new Error('Failed to register user, please try again later');
+        throw new Error('Failed to edit category, please try again later');
     }
 };

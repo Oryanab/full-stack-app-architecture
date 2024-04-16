@@ -7,9 +7,9 @@ const validateMongoId = async (
     next: NextFunction
 ) => {
     const { id } = req.params;
-    // if (!isValidObjectId(id)) {
-    //     return res.status(403).send('invalid paramenter found in request');
-    // }
+    if (!isValidObjectId(id)) {
+        return res.status(403).send('invalid paramenter found in request');
+    }
     next();
 };
 

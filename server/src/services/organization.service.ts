@@ -12,7 +12,9 @@ export const registerOrganization = async (
         return organization;
     } catch (e: any) {
         logger.error(e);
-        throw new Error('Failed to register user, please try again later');
+        throw new Error(
+            'Failed to register organization, please try again later'
+        );
     }
 };
 
@@ -49,7 +51,9 @@ export const toggleEnableOrganization = async (
         return organization;
     } catch (e: any) {
         logger.error(e);
-        throw new Error('Failed to get organization, please try again later');
+        throw new Error(
+            'Failed to toggle organization, please try again later'
+        );
     }
 };
 
@@ -65,6 +69,6 @@ export const editOrganization = async (
         return organization;
     } catch (e: any) {
         logger.error(e);
-        throw new Error('Failed to get organization, please try again later');
+        throw new Error('Failed to edit organization, please try again later');
     }
 };

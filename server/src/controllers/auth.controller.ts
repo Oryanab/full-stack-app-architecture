@@ -1,6 +1,11 @@
 import { Request, Response } from 'express';
 import logger from '../utils/logger.utils';
-import { authRegister, validatePassword } from '../services/auth.service';
+import {
+    authRegister,
+    validatePassword,
+    getGeneralUsers,
+    getUsersByOrganization
+} from '../services/auth.service';
 import { omit } from 'lodash';
 import {
     AuthLoginValidator,
@@ -16,8 +21,12 @@ export const authRegisterHandler = async (
         {},
         Omit<
             AuthRegisterValidator['body'],
-            'passwordConfirm' | 'verified' | 'role' | 'restrict'
-        > & { role: UserRole }
+            | 'passwordConfirm'
+            | 'verified'
+            | 'role'
+            | 'restrict'
+            | 'organization_name'
+        > & { role: UserRole; organization_id: string }
     >,
     res: Response
 ) => {
@@ -58,6 +67,31 @@ export const authLoginHandler = async (
     });
 
     res.status(200).send(`${user.username} logged in Successfully`);
+};
+
+export const getGeneralUsersHandler = async (req: Request, res: Response) => {
+    try {
+        const users = await getGeneralUsers();
+        return res.status(200).send(users);
+    } catch (e: any) {
+        logger.error(e.message);
+        return res.status(400).send(e.message);
+    }
+};
+
+export const getUsersByOrganizationHandler = async (
+    req: Request,
+    res: Response
+) => {
+    try {
+        const users = await getUsersByOrganization(
+            res.locals.user.organization_id as string
+        );
+        return res.status(200).send(users);
+    } catch (e: any) {
+        logger.error(e.message);
+        return res.status(400).send(e.message);
+    }
 };
 
 export const authSessionHandler = (req: Request, res: Response) => {

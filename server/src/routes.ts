@@ -7,7 +7,8 @@ import {
 import {
     authRegisterHandler,
     authLoginHandler,
-    authSessionHandler
+    authSessionHandler,
+    getGeneralUsersHandler
 } from './controllers/auth.controller';
 import authenticateUser from './middlewares/authenticateUser.middleware';
 import validateUserRegistation from './middlewares/validateUserRegistation.middleware';
@@ -28,6 +29,20 @@ import {
     getCategoriesHandler,
     getCategoryHandler
 } from './controllers/category.controller';
+import {
+    createAnnouncementHandler,
+    deleteAnnouncementHandler,
+    editAnnouncementHandler,
+    getAnnouncementHandler,
+    getAnnouncementsHandler
+} from './controllers/announcement.controller';
+import validateOrganization from './middlewares/validateOrganization.middleware';
+import {
+    editOrganizationValidator,
+    registerOrganizationValidator
+} from './validators/organization.validator';
+import { categoryValidator } from './validators/category.validators';
+import { announcementsValidator } from './validators/announcement.validator';
 
 const routes = (app: Express) => {
     // Health
@@ -35,30 +50,45 @@ const routes = (app: Express) => {
         res.sendStatus(200)
     );
 
-    // Auth
+    // User Managemant
     app.post(
         '/api/register',
         [
             validateRequest(authRegisterValidator),
-            validateMongoId,
+            validateOrganization,
             validateUserRegistation
         ],
         authRegisterHandler
     );
+
     app.post(
         '/api/login',
         validateRequest(authLoginValidator),
         authLoginHandler
     );
+
     app.get('/api/session', authenticateUser, authSessionHandler);
 
-    // GET users - admins
-    // GET users by orgnization - owners
+    app.get(
+        '/api/users/general',
+        [authenticateUser, validateAdmin],
+        getGeneralUsersHandler
+    );
+
+    app.get(
+        '/api/users/organization',
+        [authenticateUser, validateOwner],
+        getOrganizationsHandler
+    );
 
     // Orgnizations:
     app.post(
         '/api/orgnizations',
-        [authenticateUser, validateAdmin],
+        [
+            validateRequest(registerOrganizationValidator),
+            authenticateUser,
+            validateAdmin
+        ],
         registerOrganizationHandler
     );
 
@@ -82,13 +112,22 @@ const routes = (app: Express) => {
 
     app.put(
         '/api/orgnizations/:id',
-        [authenticateUser, validateMongoId, validateOwner],
+        [
+            validateRequest(editOrganizationValidator),
+            authenticateUser,
+            validateMongoId,
+            validateOwner
+        ],
         editOrganizationHandler
     );
 
-    // categories
+    // Categories
 
-    app.post('/api/categories', authenticateUser, createCategoryHandler);
+    app.post(
+        '/api/categories',
+        [validateRequest(categoryValidator), authenticateUser],
+        createCategoryHandler
+    );
 
     app.get('/api/categories', authenticateUser, getCategoriesHandler);
 
@@ -106,8 +145,39 @@ const routes = (app: Express) => {
 
     app.put(
         '/api/categories/:id',
-        [authenticateUser, validateMongoId],
+        [validateRequest(categoryValidator), authenticateUser, validateMongoId],
         editCategoryHandler
+    );
+
+    // Announcements
+    app.post(
+        '/api/announcements',
+        [validateRequest(announcementsValidator), authenticateUser],
+        createAnnouncementHandler
+    );
+
+    app.get('/api/announcements', authenticateUser, getAnnouncementsHandler);
+
+    app.get(
+        '/api/announcements/:id',
+        [authenticateUser, validateMongoId],
+        getAnnouncementHandler
+    );
+
+    app.delete(
+        '/api/announcements/:id',
+        [authenticateUser, validateMongoId, validateOwner],
+        deleteAnnouncementHandler
+    );
+
+    app.put(
+        '/api/announcements/:id',
+        [
+            validateRequest(announcementsValidator),
+            authenticateUser,
+            validateMongoId
+        ],
+        editAnnouncementHandler
     );
 };
 

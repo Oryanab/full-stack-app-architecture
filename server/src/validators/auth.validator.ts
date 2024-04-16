@@ -20,7 +20,7 @@ export const authRegisterValidator = object({
         email: string({
             required_error: 'Email is required'
         }).email('Not a valid email'),
-        organization_id: string({
+        organization_name: string({
             required_error: 'Organization is required'
         })
     })

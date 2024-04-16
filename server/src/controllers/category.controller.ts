@@ -28,7 +28,7 @@ export const createCategoryHandler = async (
 
 export const getCategoriesHandler = async (req: Request, res: Response) => {
     try {
-        const category = await getCategory(
+        const category = await getCategories(
             res.locals.user.organization_id as string
         );
         return res.status(200).send(category);
@@ -43,7 +43,10 @@ export const getCategoryHandler = async (
     res: Response
 ) => {
     try {
-        const category = await getCategories(req.params.id);
+        const category = await getCategory(req.params.id);
+        if (!category) {
+            return res.status(404).send('category not found');
+        }
         return res.status(200).send(category);
     } catch (e: any) {
         logger.error(e.message);
@@ -56,6 +59,10 @@ export const deleteCategoryHandler = async (
     res: Response
 ) => {
     try {
+        const category = await getCategory(req.params.id);
+        if (!category) {
+            return res.status(404).send('category not found');
+        }
         await deleteCategory(req.params.id);
         return res.status(200).send('deleted successfully');
     } catch (e: any) {
@@ -69,8 +76,12 @@ export const editCategoryHandler = async (
     res: Response
 ) => {
     try {
-        const category = await editCategory(req.params.id, req.body);
-        return res.status(200).send(category);
+        const category = await getCategory(req.params.id);
+        if (!category) {
+            return res.status(404).send('category not found');
+        }
+        const updatedCategory = await editCategory(req.params.id, req.body);
+        return res.status(200).send(updatedCategory);
     } catch (e: any) {
         logger.error(e.message);
         return res.status(400).send(e.message);
